@@ -22,7 +22,7 @@ except ImportError:
 class TrafficLineSchema(Schema):
     """Define the schema for the traffic lines provided by the user"""
     def __init__(self, **kwargs):
-        super(Schema, self).__init__(strict=True, **kwargs)
+        super(TrafficLineSchema, self).__init__(**kwargs)
 
     action = fields.Boolean(required=True)
     sources = fields.List(fields.Str(), required=True)
@@ -49,10 +49,12 @@ def main():
         module.fail_json(msg="algoec package is required for this module")
 
     # Validate the structure of the traffic lines provided by the user
-    result = TrafficLineSchema().load(module.params["traffic_lines"], many=True)
-    if result.errors:
-        raise ValueError("Incorrect data structure provided for traffic lines: {}".format(result.errors))
-    traffic_lines = result.data
+    result = TrafficLineSchema(many=True).load(module.params["traffic_lines"])
+ 
+    #TODO: check marshmallow docs
+    #if result.errors:
+    #    raise ValueError("Incorrect data structure provided for traffic lines: {}".format(result.errors))
+    traffic_lines = result
 
     traffic_lines_to_create = []
 
